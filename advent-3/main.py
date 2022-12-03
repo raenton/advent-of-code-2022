@@ -5,20 +5,26 @@ def priority(character):
         return ord(character.encode('ascii')) - ord('a'.encode('ascii')) + 1
 
 
-def common_character(string_pair):
-    for char in string_pair[0]:
-        if char in string_pair[1]:
+def common_character(group):
+    longest = max(*group, key=len)
+    group.remove(longest)
+    for char in longest:
+        tracker = [False] * len(group)
+        for index, item in enumerate(group):
+            if char in item:
+                tracker[index] = True
+
+        if all(item is True for item in tracker):
             return char
 
 
-def cut_in_half(line):
-    first, second = line[:len(line)//2], line[len(line)//2:]
-    return first, second
-
-
 with open('input.txt') as reader:
-    total = 0
+    total_priority = 0
+    processing_group = []
     for line in reader:
-        total += priority(common_character(cut_in_half(line)))
+        processing_group.append(line.replace('\n', ''))
+        if len(processing_group) == 3:
+            total_priority += priority(common_character(processing_group))
+            processing_group = []
 
-    print(total)
+    print(total_priority)
